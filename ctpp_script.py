@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 @author: mdowd
-Below code can be used to extract, format ctpp data in the format availbel from the 
-current CTPP ftp site. Code will also retreive column names from the look up table provided
+Below code can be used to extract, format ctpp data in the format available from the 
+current Census Transportation Planning Package (CTPP) ftp site. Code will also retreive 
+column names from the look up table provided
 by the Census. 
 
 """
