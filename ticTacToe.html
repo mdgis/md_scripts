@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+        <style>
+
+        .text_clock{
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            top: 200px;
+            border-radius: 10%;
+            border-style: solid;
+            border-color: lightslategray;
+            text-align: center;
+            line-height: 70px; /* <-- this is what you must define */
+            vertical-align: middle;
+            font-size: 5em;
+            font-family: monospace;
+        }
+
+        .c2 {
+            left: 205px;
+        }
+
+        .c3 {
+            left: 410px;
+        }
+
+
+
+        .l1{
+            top: 5px;
+        }
+
+        .l2 {
+            top: 210px;
+        }
+
+        .l3 {
+            top: 415px;
+        }
+
+        .onX {
+            width: 150px;
+            height: 150px;
+            border-radius:50%;
+            position: absolute;
+            background-color: #00aaa1;
+
+        }
+        .onO {
+            width: 150px;
+            height: 150px;
+            border-radius:50%;
+            position: absolute;
+            background-color: #68aa0b;
+        }
+
+
+        .empty {
+            width: 150px;
+            height: 150px;
+            border-radius:50%;
+            position: absolute;
+            background-color: black;
+        }
+        .off_screen {
+            display: none;
+        }
+
+        .move{
+            font-size: 130px;
+            width: 150px;
+            height: 150px;
+            display: block;
+            vertical-align: middle;
+            text-align: center;
+            margin: 0 auto;
+            color: #31708f;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        }
+
+        #computer{
+            left: 615px;
+            position: absolute;
+            height: 210px;
+            width: 200px;
+            border-radius: 10%;;
+            border-style: solid;
+            border-color: lightslategray;
+            text-align: center;
+            line-height: 70px; /* <-- this is what you must define */
+            vertical-align: middle;
+            font-size: 2.5em;
+            font-family: monospace;
+        }
+
+        .hide{
+            display: none;
+        }
+
+        .playagain{
+            left: 615px;
+            position: absolute;
+            top: 240px;
+            height: 30px;
+            width: 200px;
+            border-radius: 10%;;
+            background-color: #000000;
+            border-style: solid;
+            color: red;
+            border-color: lightslategray;
+            text-align: center;
+            line-height: 30px; /* <-- this is what you must define */
+            vertical-align: middle;
+            font-size: 1em;
+            font-family: monospace;
+            cursor: default;
+        }
+
+        .lose{
+            color: darkslategray;
+        }
+        .win {
+            color: yellow;
+        }
+
+
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</head>
+<body onload="ticTacToe()">
+<script>
+    var board = {"A1":0, "A2":0, "A3":0,
+                 "B1":0, "B2":0, "B3":0,
+                 "C1":0, "C2":0, "C3":0
+                };
+
+    var turn = 0;
+
+    function ticTacToe() {
+        console.log("in tic tac toe");
+        //Convert -1, 0, and 1 to X's & O's or blanks
+        var indexABC = ["A","B","C"];
+        var indexNum = ["1","2","3"];
+        var lookup = {"-1":"O", "0":" ", "1":"X"};
+
+        var winConditions = {
+            "HorizontalWinA"  : ["A1", "A2", "A3"],
+            "HorizontalWinB"  : ["B1", "B2", "B3"],
+            "HorizontalWinC"  : ["C1", "C2", "C3"],
+            "VerticalWin1"    : ["A1", "B1", "C1"],
+            "VerticalWin2"    : ["A2", "B2", "C2"],
+            "VerticalWin3"    : ["A3", "B3", "C3"],
+            "AngleWin1"       : ["A1", "B2", "C3"],
+            "AngleWin2"       : ["A3", "B2", "C1"]
+        };
+
+
+        function updateBoard(){
+            indexABC.forEach(function(i){
+                var printString="";
+                indexNum.forEach(function(j){
+                    if (j === "1"){
+                        printString+= board[i+j];
+                        document.getElementById(i+j).innerText= lookup[board[i+j]];
+                    }
+                    else {
+                        printString += " - " + board[i+j];}
+                        document.getElementById(i+j).innerText= lookup[board[i+j]];
+                });
+            })
+
+        }
+
+        function updateDisplay(result, t){
+            if (t===0){
+                document.getElementById("computer").innerText="Click a dot to start playing!";}
+            else if (!result[0] && result[1]===-2){
+                var losers = document.getElementsByClassName("move");
+                for (var i = 0; i < losers.length; i++) {
+                    losers[i].className += " lose"; //second console output
+                }
+                document.getElementById("playagain").className += "playagain";
+                document.getElementById("playagain").innerText= "Play Again?";
+                document.getElementById("computer").innerText="It's a draw.";}
+            else if (!result[0] && turn%2 > 0) {document.getElementById("computer").innerText="Computer Playing";}
+            else if (!result[0] && !(turn%2)) {document.getElementById("computer").innerText="Your Turn";}
+            else if (result[0]){
+                var win = result[1];
+                var losers = document.getElementsByClassName("move");
+                for (var i = 0; i < losers.length; i++) {
+                    losers[i].className += " lose"; //second console output
+                }
+                winConditions[win].forEach(function(w){
+                    document.getElementById(w).className += ' win';});
+                document.getElementById("playagain").className += "playagain";
+                document.getElementById("playagain").innerText= "Play Again?";
+                //Say who won
+                if(t%2 === 0) {
+                    document.getElementById("computer").innerText="Computer WINS !!!";
+                }
+                else {document.getElementById("computer").innerText="Human WINS !!!";}
+            }
+        }
+
+        function result(){
+            //Dumb No Winner Check (Table sums to 9)
+            var sumCheck=0;
+            for (var key in board) {
+                if (board.hasOwnProperty(key)) {
+                   sumCheck += Math.abs(board[key])
+                }
+            }
+            if (sumCheck === 9) {
+                console.log("Full");
+                return [false,-2];}
+
+            //Next Horizontal Win
+            //Not programmatic, but much cleaner to look at and compact
+
+            //Single set of Loops checks for all Conditions
+            for (var key in winConditions) {
+                var winCheck=0;
+                if (winConditions.hasOwnProperty(key)) {
+                    winConditions[key].forEach(function(c){
+                        winCheck += board[c]
+                    });
+                    if ([-3,3].indexOf(winCheck)>-1){
+                        return [true,key];
+                    }
+                }
+            }
+            return [false,0];
+
+        }
+
+        function availableMoves() {
+            var availableMovesArray = [];
+            for (var key in board){
+                if(board.hasOwnProperty(key)){
+                    if (board[key] === 0){
+                        availableMovesArray.push(key);
+                    }
+                }
+            }
+            return availableMovesArray;
+        }
+
+
+        function updateSequence(){
+            updateBoard();
+            turn += 1;
+            updateDisplay(result(), turn);
+        }
+
+        function computerMove(){
+            var moves = availableMoves();
+            //First can the Computer Win
+            for (var i = 0; i<moves.length; i++){
+                board[moves[i]] = -1;
+                if (result()[0]){
+                    return updateSequence()
+                } else {
+                    board[moves[i]] = 0;
+                }
+            }
+
+            //Next Can it Block the Human
+            for (var i = 0; i<moves.length; i++){
+                board[moves[i]] = 1;
+                if (result()[0] && Math.random()<.8){
+                    board[moves[i]] = -1;
+                    return updateSequence()
+                } else {
+                    board[moves[i]] = 0;
+                }
+            }
+            //Next just go somewhere
+            //Just set it to random location
+            board[moves[(Math.floor(Math.random()*moves.length))]] = -1;
+            return updateSequence();
+
+        }
+
+        //Click event listener
+        $( "div" ).click(function() {
+            var check= this.childNodes[0];
+
+            if (check.innerText === "" && !result()[0]){
+                board[check.id] = turn%2 > 0 ? -1 :1;
+                updateSequence();
+                if (!result()[0] && result()[1]!==-2) setTimeout(computerMove, 900);
+            }
+        });
+
+    //Initial Calls;
+    updateBoard();
+    updateDisplay(result(),turn);
+    //End of Tic Tac Toe
+    }
+
+
+
+
+</script>
+<div class= "empty c1 l1"><span class="move" id="A1">X</span></div>
+<div class= "empty c1 l2" ><span class="move" id="B1">X</span></div>
+<div class= "empty  c1 l3" ><span class="move" id="C1">X</span></div>
+
+<div class= "empty c2 l1" ><span class="move" id="A2">O</span></div>
+<div class= "empty c2 l2" ><span class="move" id="B2"></span></div>
+<div class= "empty c2 l3" ><span class="move" id="C2"></span></div>
+
+<div class= "empty c3 l1" ><span class="move" id="A3">X</span></div>
+<div class= "empty c3 l2" ><span class="move" id="B3">X</span></div>
+<div class= "empty c3 l3" ><span class="move" id="C3">X</span></div>
+<div id= "computer" > The Computer</div>
+<div id= "playagain" onclick="location.reload()"  ></div>
+</body>
+</html>
